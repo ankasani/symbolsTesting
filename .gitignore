@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/SkiaSharpFormsDemos
+/Demos/SkiaSharpFormsDemos/obj
+/Demos/SkiaSharpFormsDemos.Droid/obj
+/Demos/SkiaSharpFormsDemos.iOS/obj
+/Demos/SkiaSharpFormsDemos.UWP/obj
