@@ -49,12 +49,13 @@ jobs:
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
-          certSecureFile: 5fc622a5-81b4-4224-8fdf-bd31c10c1826
-          certPwd: Test123
+          certSecureFile: 'ankasaniios.p12'
+          certPwd: 'Test123'
+          keychain: 'temp'
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 66ea52ea-502a-49c1-9540-5e8485d7def9
+          provProfileSecureFile: 'App_center_CSS_wildcard_Limited_Development.mobileprovision'
       - task: Bash@3
         displayName: Remove Default NuGet Config
         inputs:
