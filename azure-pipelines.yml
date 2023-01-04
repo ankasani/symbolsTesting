@@ -33,9 +33,9 @@ jobs:
             '##vso[task.setvariable
             variable=PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/bin:$PATH;echo
             '##vso[task.setvariable
-            variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_14.2.app;sudo
+            variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_13.2.1.app;sudo
             xcode-select --switch
-            /Applications/Xcode_14.2.app/Contents/Developer"
+            /Applications/Xcode_13.2.1.app/Contents/Developer"
       - task: ShellScript@2
         displayName: Set Xamarin SDK Bundle
         inputs:
@@ -62,20 +62,20 @@ jobs:
         inputs:
           targetType: inline
           script: rm -f /Users/runner/.config/NuGet/NuGet.Config
-      # - task: CmdLine@1
-      #   displayName: Restore Nuget
-      #   inputs:
-      #     filename: /bin/bash
-      #     arguments: >-
-      #       -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
-      #       -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
-      #       nuget restore '{}' -DisableParallelProcessing"
-
-      - task: NuGetCommand@2
+      - task: CmdLine@1
+        displayName: Restore Nuget
         inputs:
-          command: 'restore'
-          restoreSolution: '**/*.sln'
-          feedsToUse: 'select'
+          filename: /bin/bash
+          arguments: >-
+            -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
+            -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
+            nuget restore '{}' -DisableParallelProcessing"
+
+      # - task: NuGetCommand@2
+      #   inputs:
+      #     command: 'restore'
+      #     restoreSolution: '**/*.sln'
+      #     feedsToUse: 'select'
       - task: XamariniOS@1
         displayName: Build Xamarin.iOS solution
         inputs:
