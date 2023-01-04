@@ -95,6 +95,13 @@ jobs:
             xcode-select --switch
             /Applications/Xcode_14.2.app/Contents/Developer"
 
+      - task: ShellScript@2
+        displayName: Set Xamarin SDK Bundle
+        inputs:
+          scriptPath: $(Agent.HomeDirectory)/scripts/select-xamarin-sdk.sh
+          args: 61212
+          disableAutoCwd: true
+          cwd: $(System.DefaultWorkingDirectory)
       - task: XamariniOS@1
         displayName: Build Xamarin.iOS solution
         inputs:
