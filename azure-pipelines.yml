@@ -19,7 +19,7 @@ jobs:
       - task: Bash@3
         inputs:
           targetType: 'inline'
-          script: 'dotnet sln $APPCENTER_SOURCE_DIRECTORY/SkiaSharpFormsDemos.sln remove $APPCENTER_SOURCE_DIRECTORY/Demos/SkiaSharpFormsDemos.UWP/SkiaSharpFormsDemos.UWP.csproj'
+          script: 'dotnet sln $(Build.Repository.LocalPath)/SkiaSharpFormsDemos.sln remove $(Build.Repository.LocalPath)/Demos/SkiaSharpFormsDemos.UWP/SkiaSharpFormsDemos.UWP.csproj'
       - task: CmdLine@1
         displayName: Set Mono version and Xcode path
         inputs:
