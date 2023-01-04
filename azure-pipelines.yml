@@ -57,20 +57,20 @@ jobs:
         inputs:
           targetType: inline
           script: rm -f /Users/runner/.config/NuGet/NuGet.Config
-      - task: CmdLine@1
-        displayName: Restore Nuget
-        inputs:
-          filename: /bin/bash
-          arguments: >-
-            -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
-            -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
-            nuget restore '{}' -DisableParallelProcessing"
-
-      # - task: NuGetCommand@2
+      # - task: CmdLine@1
+      #   displayName: Restore Nuget
       #   inputs:
-      #     command: 'restore'
-      #     restoreSolution: '**/*.sln'
-      #     feedsToUse: 'select'
+      #     filename: /bin/bash
+      #     arguments: >-
+      #       -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
+      #       -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
+      #       nuget restore '{}' -DisableParallelProcessing"
+
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '**/*.sln'
+          feedsToUse: 'select'
       - task: XamariniOS@1
         displayName: Build Xamarin.iOS solution
         inputs:
