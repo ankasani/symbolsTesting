@@ -62,20 +62,27 @@ jobs:
         inputs:
           targetType: inline
           script: rm -f /Users/runner/.config/NuGet/NuGet.Config
-      # - task: CmdLine@1
-      #   displayName: Restore Nuget
-      #   inputs:
-      #     filename: /bin/bash
-      #     arguments: >-
-      #       -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
-      #       -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
-      #       nuget restore '{}' -DisableParallelProcessing"
 
-      - task: NuGetCommand@2
+      - task: Bash@3
+        displayName: Remove External xbuild
         inputs:
-          command: 'restore'
-          restoreSolution: '**/*.sln'
-          feedsToUse: 'select'
+          targetType: 'inline'
+          script: 'sudo rm -Rf /Library/Frameworks/Mono.framework/External/xbuild/Xamarin/Mac'
+
+      - task: CmdLine@1
+        displayName: Restore Nuget
+        inputs:
+          filename: /bin/bash
+          arguments: >-
+            -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
+            -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
+            nuget restore '{}' -DisableParallelProcessing"
+
+      # - task: NuGetCommand@2
+      #   inputs:
+      #     command: 'restore'
+      #     restoreSolution: '**/*.sln'
+      #     feedsToUse: 'select'
       - task: XamariniOS@1
         displayName: Build Xamarin.iOS solution
         inputs:
