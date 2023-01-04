@@ -26,12 +26,7 @@ jobs:
         inputs:
           filename: /bin/bash
           arguments: >-
-            -c "echo '##vso[task.setvariable
-            variable=DYLD_FALLBACK_LIBRARY_PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/lib:/lib:/usr/lib:$DYLD_LIBRARY_FALLBACK_PATH;echo
-            '##vso[task.setvariable
-            variable=PKG_CONFIG_PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/lib/pkgconfig:/Library/Frameworks/Mono.framework/Versions/6_12_12/share/pkgconfig:$PKG_CONFIG_PATH;echo
-            '##vso[task.setvariable
-            variable=PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/bin:$PATH;echo
+            -c "echo
             '##vso[task.setvariable
             variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_13.2.1.app;sudo
             xcode-select --switch
