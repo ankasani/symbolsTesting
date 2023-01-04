@@ -1,0 +1,116 @@
+resources:
+  repositories:
+    - repository: self
+      type: git
+      ref: refs/heads/main
+jobs:
+  - job: Phase_1
+    displayName: Build
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 0
+    pool:
+      name: Azure Pipelines
+      vmImage: macOS-12
+    steps:
+      - checkout: self
+        clean: true
+        submodules: recursive
+        lfs: true
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: 'dotnet sln $APPCENTER_SOURCE_DIRECTORY/SkiaSharpFormsDemos.sln remove $APPCENTER_SOURCE_DIRECTORY/Demos/SkiaSharpFormsDemos.UWP/SkiaSharpFormsDemos.UWP.csproj'
+      - task: CmdLine@1
+        displayName: Set Mono version and Xcode path
+        inputs:
+          filename: /bin/bash
+          arguments: >-
+            -c "echo '##vso[task.setvariable
+            variable=DYLD_FALLBACK_LIBRARY_PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/lib:/lib:/usr/lib:$DYLD_LIBRARY_FALLBACK_PATH;echo
+            '##vso[task.setvariable
+            variable=PKG_CONFIG_PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/lib/pkgconfig:/Library/Frameworks/Mono.framework/Versions/6_12_20/share/pkgconfig:$PKG_CONFIG_PATH;echo
+            '##vso[task.setvariable
+            variable=PATH;]'/Library/Frameworks/Mono.framework/Versions/6_12_12/bin:$PATH;echo
+            '##vso[task.setvariable
+            variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_14.2.app;sudo
+            xcode-select --switch
+            /Applications/Xcode_14.2.app/Contents/Developer"
+      - task: ShellScript@2
+        displayName: Set Xamarin SDK Bundle
+        inputs:
+          scriptPath: $(Agent.HomeDirectory)/scripts/select-xamarin-sdk.sh
+          args: 61212
+          disableAutoCwd: true
+          cwd: $(System.DefaultWorkingDirectory)
+      - task: UseDotNet@2
+        displayName: Switch .NET Core version
+        inputs:
+          version: 5.0.100
+      - task: InstallAppleCertificate@2
+        displayName: Install Apple certificate
+        inputs:
+          certSecureFile: 5fc622a5-81b4-4224-8fdf-bd31c10c1826
+          certPwd: Test123
+      - task: InstallAppleProvisioningProfile@0
+        displayName: Install Apple provisioning profile
+        inputs:
+          provProfileSecureFile: 66ea52ea-502a-49c1-9540-5e8485d7def9
+      - task: Bash@3
+        displayName: Remove Default NuGet Config
+        inputs:
+          targetType: inline
+          script: rm -f /Users/runner/.config/NuGet/NuGet.Config
+      - task: CmdLine@1
+        displayName: Restore Nuget
+        inputs:
+          filename: /bin/bash
+          arguments: >-
+            -c "/usr/bin/find . -name '*.sln' -type f -print0 | /usr/bin/xargs
+            -0 grep -l 'SkiaSharpFormsDemos.iOS.csproj' | /usr/bin/xargs -I '{}'
+            nuget restore '{}' -DisableParallelProcessing"
+      - task: XamariniOS@1
+        displayName: Build Xamarin.iOS solution
+        inputs:
+          solution: Demos/SkiaSharpFormsDemos.iOS/SkiaSharpFormsDemos.iOS.csproj
+          runNugetRestore: false
+          packageApp: true
+          forSimulator: false
+          args: '/t:Rebuild '
+          signMethod: id
+          iosSigningIdentity: $(APPLE_CERTIFICATE_SIGNING_IDENTITY)
+          provProfileUuid: 3fcd30f6-5033-4201-a6f9-bbd283ecffdd
+          buildTool: msbuild
+      - task: CmdLine@1
+        displayName: Making Output Folder
+        inputs:
+          filename: /bin/mkdir
+          arguments: $(build.artifactstagingdirectory)/build
+      - task: CmdLine@1
+        displayName: Copy build files to staging
+        inputs:
+          filename: /bin/bash
+          arguments: >-
+            -c "/usr/bin/find . ! -path '*/obj/*' -type f -name '*.ipa' -print0
+            | xargs -0 stat -f \"%m %N\" | sort -rn | head -1 | cut -f2- -d\" \"
+            | xargs -L 1 -I{} cp -R -v {}
+            $(build.artifactstagingdirectory)/build"
+      - task: CmdLine@1
+        displayName: Making Output Folder
+        inputs:
+          filename: /bin/mkdir
+          arguments: $(build.artifactstagingdirectory)/symbols
+      - task: CmdLine@1
+        displayName: Copy symbol files to staging
+        inputs:
+          filename: /usr/bin/find
+          arguments: ' . -type d -name "*.dSYM" -exec cp -v -R {} $(build.artifactstagingdirectory)/symbols  ;'
+      - task: PublishBuildArtifacts@1
+        displayName: Publish build
+        inputs:
+          PathtoPublish: $(build.artifactstagingdirectory)/build
+          ArtifactName: build
+      - task: PublishBuildArtifacts@1
+        displayName: Publish symbols
+        inputs:
+          PathtoPublish: $(build.artifactstagingdirectory)/symbols
+          ArtifactName: symbols
