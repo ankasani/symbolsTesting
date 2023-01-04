@@ -148,22 +148,4 @@
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup />
   </Target>
-  <Target Name="PrepareGenerateDSymFiles"
-        AfterTargets="_PrepareDebugSymbolGeneration"
-        BeforeTargets="_GenerateDebugSymbols">
-    <ItemGroup>
-        <_AppExtensionDebugSymbolProperties>
-            <NoDSymUtil>true</NoDSymUtil>
-            <NoSymbolStrip>true</NoSymbolStrip>
-        </_AppExtensionDebugSymbolProperties>
-    </ItemGroup>
-</Target>
-
-<Target Name="GenerateDSymFiles"
-        AfterTargets="_CopyAppExtensionsToBundle"
-        DependsOnTargets="_GetNativeExecutableName;
-                          _PrepareDebugSymbolGeneration;
-                          PrepareGenerateDSymFiles;
-                          _GenerateDebugSymbols">
-</Target>
 </Project>
