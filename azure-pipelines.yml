@@ -52,12 +52,12 @@ jobs:
         displayName: Install Apple certificate
         inputs:
           certSecureFile: 'ankasaniios.p12'
-          certPwd: 'Test123'
+          certPwd: 'xxxxxx'
           keychain: 'temp'
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 'App_center_CSS_wildcard_Limited_Development.mobileprovision'
+          provProfileSecureFile: 'Test.mobileprovision'
       - task: Bash@3
         displayName: Remove Default NuGet Config
         inputs:
@@ -95,17 +95,6 @@ jobs:
             variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_14.2.app;sudo
             xcode-select --switch
             /Applications/Xcode_14.2.app/Contents/Developer"
-    
-      - task: Bash@3
-        inputs:
-          targetType: 'inline'
-          script: |
-            #!/usr/bin/env bash
-            set -ex
-            curl "https://dl.internalx.com/wrench/7.0.1xx/c51a20dbde7bb30d896019f178e0055559071177/6999758/package/xamarin.ios-16.1.1.350.pkg" > "$HOME/Downloads/Xamarin-installer.pkg"
-            sudo installer -store -pkg "$HOME/Downloads/Xamarin-installer.pkg" -target "/"
-            ls -alh /Library/Frameworks/Xamarin.iOS.framework/Versions
-            /Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin/mtouch --version
 
       - task: XamariniOS@1
         displayName: Build Xamarin.iOS solution
